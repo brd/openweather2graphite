@@ -1,0 +1,6 @@
+{
+  "carbon_server": "127.0.0.1",
+  "carbon_port": 2003,
+  "zip_code": 11111,
+  "openweather_key": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+}
