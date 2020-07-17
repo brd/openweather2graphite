@@ -24,7 +24,7 @@ def poll_openweather_api(config):
   payload = {
     "zip": config["zip_code"],
     "appid": config["openweather_key"],
-    "units": "metric"
+    "units": config["units"]
   }
   r = requests.get(OPENWEATHER_URL, params=payload)
 
