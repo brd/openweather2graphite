@@ -38,8 +38,18 @@ def poll_openweather_api(config):
     for x in ['temp', 'feels_like', 'temp_min', 'temp_max', 'pressure', 'humidity' ]:
       if x == "humidity":
         publish_to_carbon(config, 'house/humidity/openweather_' + x, res['main'][x])
+        # The OpenWeather API only updates every 10 minutes, so fill in
+        # the gaps in the graph with the same value every 60 seconds for
+        # the rest of the 10 minute period
+        for t in range(60, 600, 60):
+          config['s'].enter(t, 1, publish_to_carbon, argument=(config, 'house/humidity/openweather_' + x, res['main'][x]))
       if x.startswith('temp') or x == 'feels_like':
         publish_to_carbon(config, 'house/temperature/openweather_' + x, res['main'][x])
+        # The OpenWeather API only updates every 10 minutes, so fill in
+        # the gaps in the graph with the same value every 60 seconds for
+        # the rest of the 10 minute period
+        for t in range(60, 600, 60):
+          config['s'].enter(t, 1, publish_to_carbon, argument=(config, 'house/temperature/openweather_' + x, res['main'][x]))
       if x == 'pressure':
         # ignore for now
         pass
