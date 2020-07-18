@@ -37,7 +37,7 @@ def poll_openweather_api(config):
   if "main" in res:
     for x in ['temp', 'feels_like', 'temp_min', 'temp_max', 'pressure', 'humidity' ]:
       if x == "humidity":
-        publish_to_carbon(config, 'house/humidity/openweather_humidity', res['main']['humidity'])
+        publish_to_carbon(config, 'house/humidity/openweather_' + x, res['main'][x])
       if x.startswith('temp') or x == 'feels_like':
         publish_to_carbon(config, 'house/temperature/openweather_' + x, res['main'][x])
       if x == 'pressure':
