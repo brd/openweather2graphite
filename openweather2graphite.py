@@ -27,27 +27,28 @@ def poll_openweather_api(config):
     "units": config["units"]
   }
   r = requests.get(OPENWEATHER_URL, params=payload)
-
-  res = None
   try:
-    res = r.json()
+    if r.status_code == requests.codes.ok:
+      res = None
+      res = r.json()
+
+    if "main" in res:
+      for x in ['temp', 'feels_like', 'temp_min', 'temp_max', 'pressure', 'humidity' ]:
+        second = "temperature"
+        if x == "humidity":
+          second = "humidity"
+        if x == 'pressure':
+          second = "pressure"
+
+        publish_to_carbon(config, 'house/' + second + '/openweather_' + x, res['main'][x])
+        # The OpenWeather API only updates every 10 minutes, so fill in
+        # the gaps in the graph with the same value every 60 seconds for
+        # the rest of the 10 minute period
+        for t in range(60, 600, 60):
+          config['s'].enter(t, 1, publish_to_carbon, argument=(config, 'house/' + second + '/openweather_' + x, res['main'][x]))
+
   except Exception as e:
     print(f'Error: {str(e)}')
-
-  if "main" in res:
-    for x in ['temp', 'feels_like', 'temp_min', 'temp_max', 'pressure', 'humidity' ]:
-      second = "temperature"
-      if x == "humidity":
-        second = "humidity"
-      if x == 'pressure':
-        second = "pressure"
-
-      publish_to_carbon(config, 'house/' + second + '/openweather_' + x, res['main'][x])
-      # The OpenWeather API only updates every 10 minutes, so fill in
-      # the gaps in the graph with the same value every 60 seconds for
-      # the rest of the 10 minute period
-      for t in range(60, 600, 60):
-        config['s'].enter(t, 1, publish_to_carbon, argument=(config, 'house/' + second + '/openweather_' + x, res['main'][x]))
 
 
 def read_config():
