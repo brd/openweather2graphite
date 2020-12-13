@@ -46,6 +46,10 @@ def poll_openweather_api(config):
         # the rest of the 10 minute period
         for t in range(60, 600, 60):
           config['s'].enter(t, 1, publish_to_carbon, argument=(config, 'house/' + second + '/openweather_' + x, res['main'][x]))
+    if "clouds" in res:
+      publish_to_carbon(config, 'house/clouds/openweather_clouds', res['clouds']['all'])
+      for t in range(60, 600, 60):
+        config['s'].enter(t, 1, publish_to_carbon, argument=(config, 'house/clouds/openweather_clouds', res['clouds']['all']))
 
   except Exception as e:
     print(f'Error: {str(e)}')
